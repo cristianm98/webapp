@@ -1,13 +1,10 @@
 from collections import OrderedDict
 
 import streamlit as st
-import torch
 from PIL import Image
 
 import utils
-from model import predict
 from models.pspnet import PspNet
-from models.unet import Unet
 
 st.set_option('deprecation.showfileUploaderEncoding', False)
 

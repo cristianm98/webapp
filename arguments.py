@@ -16,26 +16,26 @@ def str2bool(v):
 def get_arguments():
     parser = ArgumentParser()
     parser.add_argument(
-        '--device',
+        '-d',
         default='cuda',
         help='Device on which the network will be trained. Default: cuda')
     parser.add_argument(
-        '--width',
+        '-w',
         type=int,
         default=512,
         help='The width of the image. Default: 512'),
     parser.add_argument(
-        '--height',
+        '-h',
         type=int,
         default=512,
         help='The width of the image. Default: 512'),
     parser.add_argument(
-        '--checkpoint-dir',
+        '-c',
         type=str,
         default='/content/drive/MyDrive/Colab Notebooks/Checkpoints',
         help='Path to the saved checkpoints. Default: /content/drive/MyDrive/Colab Notebooks/Checkpoints')
     parser.add_argument(
-        '--model',
+        '-m',
         choices=['pspnet', 'unet'],
         default='unet',
         help='The model to use. Default: unet')
