@@ -4,9 +4,11 @@ import torch
 import torchvision.transforms as transforms
 import transforms as ext_transforms
 import time
+from arguments import get_arguments
 
-load_dir_path = "checkpoints"
-device = torch.device('cpu')
+arguments = get_arguments()
+load_dir_path = arguments.checkpoint_dir
+device = torch.device(arguments.device)
 
 
 def load_model(model, model_name, dataset_name):
