@@ -5,6 +5,8 @@ import torchvision.transforms as transforms
 import transforms as ext_transforms
 import time
 from arguments import get_sys_args
+from models.pspnet import PspNet
+from models.unet import Unet
 
 arguments = get_sys_args()
 load_dir_path = arguments['checkpoint_dir']
@@ -55,4 +57,11 @@ def predict(model, image, class_encoding):
 def transform_input(width, height):
     image_transform = [transforms.Resize((width, height)), transforms.ToTensor()]
     return transforms.Compose(image_transform)
+
+
+def get_model(model_name, num_classes, pretrained):
+    if model_name == 'PSPNet':
+        return PspNet(num_classes=num_classes, pretrained=pretrained)
+    elif model_name == 'UNet':
+        return Unet(num_classes=num_classes)
 

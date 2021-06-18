@@ -3,6 +3,7 @@ from collections import OrderedDict
 import streamlit as st
 from PIL import Image
 
+import color_encoding
 import utils
 from models.pspnet import PspNet
 
@@ -10,51 +11,20 @@ st.set_option('deprecation.showfileUploaderEncoding', False)
 
 st.title("Road Detection - Semantic Segmentation")
 st.write("")
-
+dataset_options = ('CamVid', 'InfraRed')
+model_options = ('PSPNet', 'UNet')
+selected_dataset_idx = st.selectbox('Dataset used for training', list(range(len(dataset_options))),
+                                    format_func=lambda x: dataset_options[x])
+dataset_name = dataset_options[selected_dataset_idx]
+st.write("Selected dataset: {0}".format(dataset_name))
+selected_model_idx = st.selectbox('Model', list(range(len(model_options))),
+                                  format_func=lambda x: model_options[x])
+model_name = model_options[selected_model_idx]
+st.write("Selected model: {0}".format(model_name))
+class_encoding = color_encoding.get_color_encoding(dataset_name)
 file_up = st.file_uploader("Upload an image")
-
-# TODO complete these
-model_name = "PSPNet"
-# model_name = "UNet"
-dataset_name = "camvid"
-class_encoding = OrderedDict([
-    ('Animal', (64, 128, 64)),
-    ('Archway', (192, 0, 128)),
-    ('Bicyclist', (0, 128, 92)),
-    ('Bridge', (0, 128, 64)),
-    ('Building', (128, 0, 0)),
-    ('Car', (64, 0, 128)),
-    ('CartLuggagePram', (64, 0, 192)),
-    ('Child', (192, 128, 64)),
-    ('Column_Pole', (192, 192, 128)),
-    ('Fence', (64, 64, 128)),
-    ('LaneMkgsDriv', (128, 0, 192)),
-    ('LaneMkgsNonDriv', (192, 0, 64)),
-    ('Misc_Text', (128, 128, 64)),
-    ('MotorcycleScooter', (192, 0, 192)),
-    ('OtherMoving', (128, 64, 64)),
-    ('ParkingBlock', (64, 192, 128)),
-    ('Pedestrian', (64, 64, 0)),
-    ('Road', (128, 64, 128)),
-    ('RoadShoulder', (128, 128, 192)),
-    ('Sidewalk', (0, 0, 192)),
-    ('SignSymbol', (192, 128, 128)),
-    ('Sky', (128, 128, 128)),
-    ('SUVPickupTruck', (64, 128, 192)),
-    ('TrafficCone', (0, 0, 64)),
-    ('TrafficLight', (0, 64, 64)),
-    ('Train', (192, 64, 128)),
-    ('Tree', (128, 128, 0)),
-    ('Truck_Bus', (192, 128, 192)),
-    ('Tunnel', (64, 0, 64)),
-    ('VegetationMisc', (192, 192, 0)),
-    ('Void', (0, 0, 0)),
-    ('Wall', (64, 192, 0))
-])
-
 if file_up is not None:
-    model = PspNet(len(class_encoding), pretrained=True)
-    # model = Unet(len(class_encoding))
+    model = utils.get_model(model_name, len(class_encoding), True)
     model = utils.load_model(model, model_name, dataset_name)
     input_image = Image.open(file_up)
     st.image(input_image, caption='Uploaded Image.', use_column_width=True)
