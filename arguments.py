@@ -41,7 +41,7 @@ def get_arguments():
 def get_sys_args():
     return {
         'device': sys.argv[1],
-        'checkpoint_path': sys.argv[2],
+        'checkpoint_dir': sys.argv[2],
         'width': sys.argv[3],
         'height': sys.argv[4]
     }
