@@ -4,11 +4,11 @@ import torch
 import torchvision.transforms as transforms
 import transforms as ext_transforms
 import time
-from arguments import get_arguments
+from arguments import get_sys_args
 
-arguments = get_arguments()
-load_dir_path = arguments.checkpoint_dir
-device = torch.device(arguments.device)
+arguments = get_sys_args()
+load_dir_path = arguments['checkpoint_dir']
+device = torch.device(arguments['device'])
 
 
 def load_model(model, model_name, dataset_name):
@@ -55,3 +55,4 @@ def predict(model, image, class_encoding):
 def transform_input(width, height):
     image_transform = [transforms.Resize((width, height)), transforms.ToTensor()]
     return transforms.Compose(image_transform)
+

@@ -1,3 +1,4 @@
+import sys
 from argparse import ArgumentTypeError
 from argparse import ArgumentParser
 
@@ -34,9 +35,13 @@ def get_arguments():
         type=str,
         default='/content/drive/MyDrive/Colab Notebooks/Checkpoints',
         help='Path to the saved checkpoints. Default: /content/drive/MyDrive/Colab Notebooks/Checkpoints')
-    parser.add_argument(
-        '-m',
-        choices=['pspnet', 'unet'],
-        default='unet',
-        help='The model to use. Default: unet')
     return parser.parse_args()
+
+
+def get_sys_args():
+    return {
+        'device': sys.argv[1],
+        'checkpoint_path': sys.argv[2],
+        'width': sys.argv[3],
+        'height': sys.argv[4]
+    }
