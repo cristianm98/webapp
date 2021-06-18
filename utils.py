@@ -43,8 +43,10 @@ def predict(model, image, class_encoding):
     print("[Max]--- %s seconds ---" % (time.time() - start_time))
     # tf = transforms.Compose([
     #     ext_transforms.LongTensorToRGBPIL(class_encoding),
+    #     transforms.ToTensor()
     # ])
     start_time = time.time()
+    prediction = prediction.detach().cpu()
     prediction = ext_transforms.LongTensorToRGBPIL(class_encoding)(prediction)
     print("[Ext transform]--- %s seconds ---" % (time.time() - start_time))
     return prediction
