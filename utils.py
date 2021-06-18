@@ -31,6 +31,7 @@ def predict(model, image, class_encoding):
     image = transform_input(512, 512)(image)
     print("[Transform input] --- %s seconds ---" % (time.time() - start_time))
     image = torch.unsqueeze(image, 0)
+    image = image.to(device)
     model = model.to(device)
     model.eval()
     with torch.no_grad():
