@@ -42,7 +42,6 @@ infrared_encoding = ([
 
 
 def get_color_encoding(dataset_name):
-    print(dataset_name.lower())
     if dataset_name.lower() == 'camvid':
         return camvid_encoding
     elif dataset_name.lower() == 'infrared':

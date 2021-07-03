@@ -19,9 +19,9 @@ class DoubleConv(nn.Module):
         return self.conv(x)
 
 
-class Unet(nn.Module):
+class UNet(nn.Module):
     def __init__(self, in_channels=3, num_classes=1, features=None):
-        super(Unet, self).__init__()
+        super(UNet, self).__init__()
         if features is None:
             features = [64, 128, 256, 512, 1024]
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
