@@ -44,5 +44,4 @@ def get_sys_args():
         'checkpoint_dir': sys.argv[2],
         'width': sys.argv[3],
         'height': sys.argv[4],
-        'use_day': str2bool(sys.argv[5])
     }

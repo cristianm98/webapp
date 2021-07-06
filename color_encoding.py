@@ -35,7 +35,7 @@ camvid_encoding = OrderedDict([
     ('Wall', (64, 192, 0))
 ])
 
-infrared_encoding = ([
+infrared_encoding = OrderedDict([
     ('Background', (0, 0, 0)),
     ('Road', (128, 0, 0))
 ])

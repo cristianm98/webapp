@@ -3,12 +3,16 @@ import os
 
 import streamlit as st
 import torch
+import torchvision.models.segmentation
 import torchvision.transforms as transforms
 
 import transforms as ext_transforms
 from arguments import get_sys_args
 from models.pspnet import PspNet
 from models.unet import UNet
+from PIL import Image
+from torchvision.transforms import ToPILImage
+
 
 arguments = get_sys_args()
 device = torch.device(arguments['device'])
@@ -27,17 +31,29 @@ def load_model(model, model_name, dataset_name):
 
 
 def predict(model, image, class_encoding):
-    image = transform_input(arguments['width'], arguments['height'])(image)
+    image = transform_input(int(arguments['width']), int(arguments['height']))(image)
+    original = ToPILImage()(image)
     image = torch.unsqueeze(image, 0)
     image = image.to(device)
     model = model.to(device)
     model.eval()
     with torch.no_grad():
-        prediction = model(image)
+        if model.__class__.__name__.lower() == 'fcn':
+            prediction = model(image)['out']
+        else:
+            prediction = model(image)
     _, prediction = torch.max(prediction.data, 1)
     prediction = prediction.detach().cpu()
     prediction = ext_transforms.LongTensorToRGBPIL(class_encoding)(prediction)
-    return prediction
+    result = merge_images(original, prediction)
+    return result
+
+
+def merge_images(image, seg_image):
+    image = image.convert('RGBA')
+    seg_image = seg_image.convert('RGBA')
+    result = Image.blend(image, seg_image, 0.5)
+    return result
 
 
 def transform_input(width, height):
@@ -46,10 +62,12 @@ def transform_input(width, height):
 
 
 def get_model(model_name, num_classes, pretrained):
-    if model_name == 'PSPNet':
+    if model_name == 'pspnet':
         return PspNet(num_classes=num_classes, pretrained=pretrained)
-    elif model_name == 'UNet':
+    elif model_name == 'unet':
         return UNet(num_classes=num_classes)
+    elif model_name == 'fcn':
+        return torchvision.models.segmentation.fcn_resnet101(num_classes=num_classes)
 
 
 @st.cache(allow_output_mutation=True)
@@ -77,11 +95,5 @@ def set_png_as_page_bg(png_file):
 
 
 def get_checkpoint_path(checkpoint_dir, model_name, dataset_name):
-    model_path = os.path.join(checkpoint_dir, dataset_name)
-    if dataset_name == 'infrared':
-        if arguments['use_day']:
-            model_path = os.path.join(model_path, 'day')
-        else:
-            model_path = os.path.join(model_path, 'night')
-    model_path = os.path.join(model_path, model_name)
+    model_path = os.path.join(checkpoint_dir, dataset_name, model_name)
     return model_path
