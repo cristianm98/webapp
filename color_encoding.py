@@ -35,14 +35,13 @@ camvid_encoding = OrderedDict([
     ('Wall', (64, 192, 0))
 ])
 
-infrared_encoding = ([
+infrared_encoding = OrderedDict([
     ('Background', (0, 0, 0)),
     ('Road', (128, 0, 0))
 ])
 
 
 def get_color_encoding(dataset_name):
-    print(dataset_name.lower())
     if dataset_name.lower() == 'camvid':
         return camvid_encoding
     elif dataset_name.lower() == 'infrared':

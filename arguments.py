@@ -43,5 +43,5 @@ def get_sys_args():
         'device': sys.argv[1],
         'checkpoint_dir': sys.argv[2],
         'width': sys.argv[3],
-        'height': sys.argv[4]
+        'height': sys.argv[4],
     }

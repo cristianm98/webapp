@@ -5,7 +5,6 @@ from collections import OrderedDict
 from torchvision.transforms import ToPILImage
 
 
-# TODO move get mask here
 class PILToLongTensor(object):
     def __call__(self, pic):
         if not isinstance(pic, Image.Image):
