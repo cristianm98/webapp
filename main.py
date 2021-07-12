@@ -1,15 +1,20 @@
 import streamlit as st
+import torch
 from PIL import Image
 
 import color_encoding
 import utils
+from arguments import get_sys_args
+
+arguments = get_sys_args()
+device = torch.device(arguments['device'])
 
 st.set_option('deprecation.showfileUploaderEncoding', False)
 utils.set_png_as_page_bg('background.jpg')
 st.title("Road Detection - Semantic Segmentation")
 st.write("")
 model_options = ('PSPNet', 'UNet', 'FCN')
-dataset_options = ('CamVid', 'InfraRed')
+dataset_options = ('InfraRed', 'CamVid')
 selected_dataset_idx = st.selectbox('Dataset used for training', list(range(len(dataset_options))),
                                     format_func=lambda x: dataset_options[x])
 dataset_name = dataset_options[selected_dataset_idx]
@@ -29,5 +34,8 @@ if file_up is not None:
     submit_btn = st.button('Submit')
     if submit_btn:
         st.write("Just a second...")
-        output_image = utils.predict(model, input_image, class_encoding)
-        st.image(output_image, caption="Result", use_column_width=True)
+        if device.type == 'cuda':
+            output_image, inference_time = utils.predict_cuda(model, input_image, class_encoding)
+        else:
+            output_image, inference_time = utils.predict_cpu(model, input_image, class_encoding)
+        st.image(output_image, caption="Result\nInference time: {0:.3f} seconds".format(inference_time), use_column_width=True)

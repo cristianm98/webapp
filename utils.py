@@ -1,5 +1,6 @@
 import base64
 import os
+import time
 
 import streamlit as st
 import torch
@@ -30,23 +31,49 @@ def load_model(model, model_name, dataset_name):
     return model
 
 
-def predict(model, image, class_encoding):
+def predict_cuda(model, image, class_encoding):
     image = transform_input(int(arguments['width']), int(arguments['height']))(image)
     original = ToPILImage()(image)
     image = torch.unsqueeze(image, 0)
     image = image.to(device)
     model = model.to(device)
     model.eval()
+    start = torch.cuda.Event(enable_timing=True)
+    end = torch.cuda.Event(enable_timing=True)
+    start.record()
     with torch.no_grad():
         if model.__class__.__name__.lower() == 'fcn':
             prediction = model(image)['out']
         else:
             prediction = model(image)
+    end.record()
     _, prediction = torch.max(prediction.data, 1)
     prediction = prediction.detach().cpu()
     prediction = ext_transforms.LongTensorToRGBPIL(class_encoding)(prediction)
     result = merge_images(original, prediction)
-    return result
+    torch.cuda.synchronize()
+    return result, start.elapsed_time(end)
+
+
+def predict_cpu(model, image, class_encoding):
+    image = transform_input(int(arguments['width']), int(arguments['height']))(image)
+    original = ToPILImage()(image)
+    image = torch.unsqueeze(image, 0)
+    image = image.to(device)
+    model = model.to(device)
+    model.eval()
+    start = time.time()
+    with torch.no_grad():
+        if model.__class__.__name__.lower() == 'fcn':
+            prediction = model(image)['out']
+        else:
+            prediction = model(image)
+    end = time.time()
+    _, prediction = torch.max(prediction.data, 1)
+    prediction = prediction.detach().cpu()
+    prediction = ext_transforms.LongTensorToRGBPIL(class_encoding)(prediction)
+    result = merge_images(original, prediction)
+    return result, end - start
 
 
 def merge_images(image, seg_image):
