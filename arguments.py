@@ -42,6 +42,7 @@ def get_sys_args():
     return {
         'device': sys.argv[1],
         'checkpoint_dir': sys.argv[2],
-        'width': sys.argv[3],
-        'height': sys.argv[4],
+        'resize_img': str2bool(sys.argv[3]),
+        'width': sys.argv[4],
+        'height': sys.argv[5],
     }

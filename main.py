@@ -36,6 +36,7 @@ if file_up is not None:
         st.write("Just a second...")
         if device.type == 'cuda':
             output_image, inference_time = utils.predict_cuda(model, input_image, class_encoding)
+            inference_time = inference_time / 1000
         else:
             output_image, inference_time = utils.predict_cpu(model, input_image, class_encoding)
         st.image(output_image, caption="Result\nInference time: {0:.3f} seconds".format(inference_time), use_column_width=True)
