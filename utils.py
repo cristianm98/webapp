@@ -32,7 +32,10 @@ def load_model(model, model_name, dataset_name):
 
 
 def predict_cuda(model, image, class_encoding):
-    image = transform_input(int(arguments['width']), int(arguments['height']))(image)
+    if arguments['resize_img']:
+        image = transform_input(int(arguments['width']), int(arguments['height']))(image)
+    else:
+        image = transforms.ToTensor()(image)
     original = ToPILImage()(image)
     image = torch.unsqueeze(image, 0)
     image = image.to(device)
